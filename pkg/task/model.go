@@ -1,9 +1,9 @@
-package main
+package task
 
 import "gorm.io/gorm"
 
 type Task struct {
 	gorm.Model
-	Task   string `json:"task"`
+	Title  string `json:"title"`
 	IsDone bool   `json:"is_done"`
 }
