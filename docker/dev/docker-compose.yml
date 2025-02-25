@@ -4,8 +4,8 @@ services:
   postgres:
     image: postgres
     environment:
-      POSTGRES_USER: postgres_user
-      POSTGRES_PASSWORD: postgres_password
-      POSTGRES_DB: postgres_db
+      POSTGRES_USER: cource_user
+      POSTGRES_PASSWORD: cource_password
+      POSTGRES_DB: cource_app
     ports:
       - "5432:5432"
