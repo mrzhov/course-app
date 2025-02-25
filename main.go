@@ -21,13 +21,13 @@ func handleError(w io.Writer, message string) {
 
 func helloHandlers(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
-	case "GET":
+	case http.MethodGet:
 		if len(task) == 0 {
 			handleError(w, "No task. Use POST route first.")
 			return
 		}
 		fmt.Fprintf(w, "Hello, %s!", task)
-	case "POST":
+	case http.MethodPost:
 		body := requestBody{}
 		err := json.NewDecoder(r.Body).Decode(&body)
 		if err != nil {
@@ -46,7 +46,7 @@ func helloHandlers(w http.ResponseWriter, r *http.Request) {
 func main() {
 	router := mux.NewRouter()
 
-	router.HandleFunc("/api/hello", helloHandlers).Methods("GET", "POST")
+	router.HandleFunc("/api/hello", helloHandlers).Methods(http.MethodGet, http.MethodPost)
 
 	http.ListenAndServe(":8080", router)
 }
