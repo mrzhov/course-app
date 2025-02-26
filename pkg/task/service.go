@@ -61,25 +61,35 @@ func (s Service) Create(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(task)
 }
 
-func (s Service) GetById(w http.ResponseWriter, r *http.Request) {
-	id, idErr := strconv.Atoi(mux.Vars(r)["id"])
+func (s Service) _GetById(w http.ResponseWriter, r *http.Request) (*Task, error) {
+	id, err := strconv.Atoi(mux.Vars(r)["id"])
 
-	if idErr != nil {
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, idErr)
-		return
+		fmt.Fprint(w, err)
+		return nil, err
 	}
 
 	var task Task
 
 	if res := s.db.First(&task, id); res.Error != nil {
 		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprint(w, res.Error)
+		fmt.Fprint(w, "Error: Task not found")
+		return nil, res.Error
+	}
+
+	return &task, nil
+}
+
+func (s Service) GetById(w http.ResponseWriter, r *http.Request) {
+	task, err := s._GetById(w, r)
+
+	if err != nil {
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(task)
+	json.NewEncoder(w).Encode(*task)
 }
 
 type PatchBody struct {
@@ -88,14 +98,13 @@ type PatchBody struct {
 }
 
 func (s Service) Patch(w http.ResponseWriter, r *http.Request) {
-	id, idErr := strconv.Atoi(mux.Vars(r)["id"])
-	body := PatchBody{}
+	task, taskErr := s._GetById(w, r)
 
-	if idErr != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, idErr)
+	if taskErr != nil {
 		return
 	}
+
+	body := PatchBody{}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -109,44 +118,25 @@ func (s Service) Patch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var task Task
-
-	if res := s.db.First(&task, id); res.Error != nil {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprint(w, res.Error)
-		return
-	}
-
 	task.Title = *body.Title
 
 	if body.IsDone != nil {
 		task.IsDone = *body.IsDone
 	}
 
-	s.db.Save(&task)
+	s.db.Save(task)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(task)
 }
 
 func (s Service) Delete(w http.ResponseWriter, r *http.Request) {
-	id, idErr := strconv.Atoi(mux.Vars(r)["id"])
+	task, err := s._GetById(w, r)
 
-	if idErr != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, idErr)
+	if err != nil {
 		return
 	}
 
-	var task Task
-
-	if res := s.db.First(&task, id); res.Error != nil {
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprint(w, res.Error)
-		return
-	}
-
-	s.db.Delete(&task)
-
+	s.db.Delete(task)
 	fmt.Fprint(w, "Deleted successfully!")
 }
