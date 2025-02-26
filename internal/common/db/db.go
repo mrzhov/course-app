@@ -3,7 +3,6 @@ package db
 import (
 	"log"
 
-	"github.com/mrzhov/course-app/pkg/task"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -16,8 +15,6 @@ func Init() *gorm.DB {
 	if err != nil {
 		log.Fatalln("Failed to connect to database: ", err)
 	}
-
-	db.AutoMigrate(&task.Task{})
 
 	return db
 }
