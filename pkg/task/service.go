@@ -28,8 +28,8 @@ func (s Service) GetList(w http.ResponseWriter, r *http.Request) {
 }
 
 type CreateBody struct {
-	Title  string `json:"title"`
-	IsDone bool   `json:"is_done"`
+	Title  *string `json:"title"`
+	IsDone bool    `json:"is_done"`
 }
 
 func (s Service) Create(w http.ResponseWriter, r *http.Request) {
@@ -41,14 +41,13 @@ func (s Service) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if body.Title == "" {
+	if body.Title == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(w, "Error: Field \"title\" is required!")
 		return
 	}
-
 	var task Task
-	task.Title = body.Title
+	task.Title = *body.Title
 	task.IsDone = body.IsDone
 
 	if res := s.db.Create(&task); res.Error != nil {
@@ -63,11 +62,11 @@ func (s Service) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s Service) GetById(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(mux.Vars(r)["id"])
+	id, idErr := strconv.Atoi(mux.Vars(r)["id"])
 
-	if err != nil {
+	if idErr != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, err)
+		fmt.Fprint(w, idErr)
 		return
 	}
 
