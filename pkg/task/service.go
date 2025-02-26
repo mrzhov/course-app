@@ -26,10 +26,8 @@ func (s Service) GetList(w http.ResponseWriter, r *http.Request) {
 }
 
 type CreateBody struct {
-	Task struct {
-		Title  string `json:"title"`
-		IsDone bool   `json:"is_done"`
-	} `json:"task"`
+	Title  string `json:"title"`
+	IsDone bool   `json:"is_done"`
 }
 
 func (s Service) Create(w http.ResponseWriter, r *http.Request) {
@@ -41,15 +39,15 @@ func (s Service) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if body.Task.Title == "" {
+	if body.Title == "" {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(w, "Error: Field \"task.title\" is required!")
+		fmt.Fprint(w, "Error: Field \"title\" is required!")
 		return
 	}
 
 	var task Task
-	task.Title = body.Task.Title
-	task.IsDone = body.Task.IsDone
+	task.Title = body.Title
+	task.IsDone = body.IsDone
 
 	if res := s.db.Create(&task); res.Error != nil {
 		w.WriteHeader(http.StatusInternalServerError)
