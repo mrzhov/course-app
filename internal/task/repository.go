@@ -5,11 +5,11 @@ import (
 )
 
 type IRepository interface {
-	Create(task Task) (Task, error)
+	Create(task *Task) error
 	GetList() ([]Task, error)
 	GetById(id uint) (Task, error)
-	Patch(task Task) (Task, error)
-	Delete(id uint) error
+	Patch(task *Task) error
+	Delete(task *Task) error
 }
 
 type Repository struct {
@@ -20,12 +20,8 @@ func NewRepository(db *gorm.DB) *Repository {
 	return &Repository{db}
 }
 
-func (r *Repository) Create(task Task) (Task, error) {
-	res := r.db.Create(&task)
-	if res.Error != nil {
-		return Task{}, res.Error
-	}
-	return task, nil
+func (r *Repository) Create(task *Task) error {
+	return r.db.Create(task).Error
 }
 
 func (r *Repository) GetList() ([]Task, error) {
@@ -40,12 +36,10 @@ func (r *Repository) GetById(id uint) (Task, error) {
 	return task, err
 }
 
-func (r *Repository) Patch(task Task) (Task, error) {
-	err := r.db.Save(&task).Error
-	return task, err
+func (r *Repository) Patch(task *Task) error {
+	return r.db.Save(task).Error
 }
 
-func (r *Repository) Delete(id uint) error {
-	err := r.db.Delete(&Task{}, id).Error
-	return err
+func (r *Repository) Delete(task *Task) error {
+	return r.db.Delete(task).Error
 }
