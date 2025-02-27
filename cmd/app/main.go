@@ -6,14 +6,21 @@ import (
 	"github.com/gorilla/mux"
 	DB "github.com/mrzhov/course-app/internal/common/db"
 	"github.com/mrzhov/course-app/internal/task"
+	"github.com/spf13/viper"
 )
 
 func main() {
+	viper.SetConfigFile(".env")
+	viper.ReadInConfig()
+
+	port := viper.Get("PORT").(string)
+	dbUrl := viper.Get("DB_URL").(string)
+
 	r := mux.NewRouter()
-	db := DB.Init()
+	db := DB.Init(dbUrl)
 	db.AutoMigrate(&task.Task{})
 
 	task.RegisterRoutes(r, db)
 
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(port, r)
 }
