@@ -1,25 +1,53 @@
 package main
 
 import (
+	"errors"
+	"log/slog"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	"github.com/spf13/viper"
+
 	DB "github.com/mrzhov/course-app/internal/common/db"
 	"github.com/mrzhov/course-app/internal/task"
-	"github.com/spf13/viper"
 )
 
-func main() {
+type Env struct {
+	port  string
+	dbUrl string
+}
+
+func initEnv() Env {
 	viper.SetConfigFile(".env")
 	viper.ReadInConfig()
 
 	port := viper.Get("PORT").(string)
 	dbUrl := viper.Get("DB_URL").(string)
 
-	r := mux.NewRouter()
-	db := DB.Init(dbUrl)
+	return Env{port, dbUrl}
+}
 
-	task.RegisterRoutes(r, db)
+func initEcho() *echo.Echo {
+	e := echo.New()
 
-	http.ListenAndServe(port, r)
+	e.Group("/api")
+
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+
+	return e
+}
+
+func main() {
+	env := initEnv()
+
+	e := initEcho()
+	db := DB.Init(env.dbUrl)
+
+	task.RegisterRoutes(e, db)
+
+	if err := e.Start(env.port); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		slog.Error("failed to start server", "error", err)
+	}
 }
