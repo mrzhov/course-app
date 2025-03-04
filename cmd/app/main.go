@@ -18,7 +18,6 @@ func main() {
 
 	r := mux.NewRouter()
 	db := DB.Init(dbUrl)
-	db.AutoMigrate(&task.Task{})
 
 	task.RegisterRoutes(r, db)
 
