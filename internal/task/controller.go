@@ -2,17 +2,17 @@ package task
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/mrzhov/course-app/internal/web/tasks"
 	"gorm.io/gorm"
 )
 
-func RegisterRoutes(e *echo.Echo, db *gorm.DB) {
+func Controller(g *echo.Group, db *gorm.DB) {
 	repo := NewRepository(db)
 	service := NewService(repo)
 	handler := NewHandler(service)
 
-	strictHandler := tasks.NewStrictHandler(handler, nil)
-	tasks.RegisterHandlers(e, strictHandler)
+	gg := g.Group("/tasks")
+	gg.GET("", handler.GetList)
+	gg.POST("", handler.Create)
 }
 
 // r.HandleFunc("/api/tasks/{id}", controller.GetById).Methods(http.MethodGet)

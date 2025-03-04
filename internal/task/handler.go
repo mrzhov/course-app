@@ -1,10 +1,9 @@
 package task
 
 import (
-	"context"
-	"fmt"
+	"net/http"
 
-	"github.com/mrzhov/course-app/internal/web/tasks"
+	"github.com/labstack/echo/v4"
 )
 
 type Handler struct {
@@ -15,59 +14,92 @@ func NewHandler(service *Service) *Handler {
 	return &Handler{service}
 }
 
-func (h *Handler) GetTasks(_ context.Context, _ tasks.GetTasksRequestObject) (tasks.GetTasksResponseObject, error) {
-	allTasks, err := h.service.GetList()
+// User
+// type User struct {
+// 	Name  string `json:"name" xml:"name"`
+// 	Email string `json:"email" xml:"email"`
+//  }
+
+//  // Handler
+//  func(c echo.Context) error {
+// 	u := &User{
+// 	  Name:  "Jon",
+// 	  Email: "jon@labstack.com",
+// 	}
+// 	return c.JSON(http.StatusOK, u)
+//  }
+
+func (h *Handler) GetList(c echo.Context) error {
+	tasks, err := h.service.GetList()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	response := tasks.GetTasks200JSONResponse{}
+	// response := tasks.GetTasks200JSONResponse{}
 
-	for _, tsk := range allTasks {
-		task := tasks.Task{
-			Id:          &tsk.ID,
-			Title:       tsk.Title,
-			Description: &tsk.Description,
-			Completed:   &tsk.Completed,
-		}
-		response = append(response, task)
+	// for _, tsk := range allTasks {
+	// 	task := tasks.Task{
+	// 		Id:          &tsk.ID,
+	// 		Title:       tsk.Title,
+	// 		Description: &tsk.Description,
+	// 		Completed:   &tsk.Completed,
+	// 	}
+	// 	response = append(response, task)
+	// }
+
+	return c.JSON(http.StatusOK, tasks)
+}
+
+type User struct {
+	Name  string `json:"name" validate:"required"`
+	Email string `json:"email" validate:"required,email"`
+}
+
+func (h *Handler) Create(c echo.Context) (err error) {
+	u := new(User)
+	if err = c.Bind(u); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
+	if err = c.Validate(u); err != nil {
+		return err
+	}
+	return c.JSON(http.StatusOK, u)
 
-	return response, nil
+	// return c.JSON(http.StatusCreated, struct{ message string }{message: "Created"})
 }
 
-func (h *Handler) PostTasks(_ context.Context, request tasks.PostTasksRequestObject) (tasks.PostTasksResponseObject, error) {
-	body := request.Body
+// func (h *Handler) Create(_ context.Context, request tasks.PostTasksRequestObject) (tasks.PostTasksResponseObject, error) {
+// 	body := request.Body
 
-	// if body.Title == nil {
-	// 	err := echo.NewHTTPError(http.StatusBadRequest, "Field title is required")
-	// 	return nil, err
-	// }
+// 	// if body.Title == nil {
+// 	// 	err := echo.NewHTTPError(http.StatusBadRequest, "Field title is required")
+// 	// 	return nil, err
+// 	// }
 
-	fmt.Println(*body)
+// 	fmt.Println(*body)
 
-	// task := Task{
-	// 	Title:       *body.Title,
-	// 	Description: *body.Description,
-	// 	Completed:   *body.Completed,
-	// }
+// 	// task := Task{
+// 	// 	Title:       *body.Title,
+// 	// 	Description: *body.Description,
+// 	// 	Completed:   *body.Completed,
+// 	// }
 
-	// err := h.service.Create(&task)
-	// if err != nil {
-	// 	return nil, err
-	// }
+// 	// err := h.service.Create(&task)
+// 	// if err != nil {
+// 	// 	return nil, err
+// 	// }
 
-	// response := tasks.PostTasks201JSONResponse{
-	// 	Id:          &task.ID,
-	// 	Title:       &task.Title,
-	// 	Description: &task.Description,
-	// 	Completed:   &task.Completed,
-	// }
+// 	// response := tasks.PostTasks201JSONResponse{
+// 	// 	Id:          &task.ID,
+// 	// 	Title:       &task.Title,
+// 	// 	Description: &task.Description,
+// 	// 	Completed:   &task.Completed,
+// 	// }
 
-	response := tasks.PostTasks201JSONResponse{}
+// 	response := tasks.PostTasks201JSONResponse{}
 
-	return response, nil
-}
+// 	return response, nil
+// }
 
 // type CreateBody struct {
 // 	Title  *string `json:"title"`
