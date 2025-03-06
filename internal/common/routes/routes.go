@@ -8,5 +8,6 @@ import (
 
 func Register(e *echo.Echo, db *gorm.DB) {
 	g := e.Group("/api")
-	task.Controller(g, db)
+
+	task.Module(g, db)
 }

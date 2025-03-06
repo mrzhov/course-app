@@ -12,12 +12,12 @@ func (s *Service) Create(task *Task) error {
 	return s.repo.Create(task)
 }
 
-func (s *Service) GetList() ([]Task, error) {
-	return s.repo.GetList()
+func (s *Service) GetList(tasks *[]Task) error {
+	return s.repo.GetList(tasks)
 }
 
-func (s *Service) GetById(id uint) (Task, error) {
-	return s.repo.GetById(id)
+func (s *Service) GetById(task *Task, id uint) error {
+	return s.repo.GetById(task, id)
 }
 
 func (s *Service) Patch(task *Task) error {
