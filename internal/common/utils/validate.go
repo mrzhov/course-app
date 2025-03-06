@@ -10,11 +10,11 @@ import (
 
 var validate *validator.Validate = validator.New(validator.WithRequiredStructEnabled())
 
-func ValidateBody(body any, c echo.Context) (err error) {
-	if err = c.Bind(body); err != nil {
+func ValidateBody(body any, c echo.Context) error {
+	if err := c.Bind(body); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	if err = c.Validate(body); err != nil {
+	if err := c.Validate(body); err != nil {
 		return err
 	}
 	return nil
