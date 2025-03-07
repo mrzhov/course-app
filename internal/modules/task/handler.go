@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/mrzhov/course-app/internal/common/utils"
+	"github.com/mrzhov/course-app/internal/utils"
 )
 
 type Handler struct {
