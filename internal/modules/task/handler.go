@@ -43,39 +43,26 @@ func (h *Handler) GetList(c echo.Context) error {
 	}
 
 	response := []TaskResponse{}
-
 	for _, t := range *tasks {
-		item := TaskResponse{
-			Id:          t.ID,
-			Title:       t.Title,
-			Description: t.Description,
-			Completed:   t.Completed,
-		}
-		response = append(response, item)
+		response = append(response, NewTaskResponse(t))
 	}
 
 	return c.JSON(http.StatusOK, response)
 }
 
 func (h *Handler) GetById(c echo.Context) error {
+	id := new(uint)
 	task := new(Task)
-	id, idErr := utils.ValidateId(c.Param("id"))
 
-	if idErr != nil {
-		return idErr
+	if err := utils.ValidateParamId(id, c.Param("id")); err != nil {
+		return err
 	}
 
-	if err := h.service.GetById(task, id); err != nil {
+	if err := h.service.GetById(task, *id); err != nil {
 		return utils.EchoBadRequest(err)
 	}
 
-	response := TaskResponse{
-		Id:          task.ID,
-		Title:       task.Title,
-		Description: task.Description,
-		Completed:   task.Completed,
-	}
-
+	response := NewTaskResponse(*task)
 	return c.JSON(http.StatusOK, response)
 }
 

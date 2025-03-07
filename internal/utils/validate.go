@@ -19,15 +19,17 @@ func ValidateBody(body any, c echo.Context) error {
 	return nil
 }
 
-func ValidateId(id string) (uint, error) {
-	if err := validate.Var(id, "required,number"); err != nil {
-		return 0, EchoBadRequest(err)
+func ValidateParamId(id *uint, paramId string) error {
+	if err := validate.Var(paramId, "required,number"); err != nil {
+		return EchoBadRequest(err)
 	}
 
-	idInt, idIntErr := strconv.Atoi(id)
+	idInt, idIntErr := strconv.Atoi(paramId)
 	if idIntErr != nil {
-		return 0, EchoBadRequest(idIntErr)
+		return EchoBadRequest(idIntErr)
 	}
 
-	return uint(idInt), nil
+	*id = uint(idInt)
+
+	return nil
 }
