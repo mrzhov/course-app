@@ -29,7 +29,7 @@ func (h *Handler) Create(c echo.Context) error {
 	}
 
 	if err := h.service.Create(&task); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return utils.EchoBadRequest(err)
 	}
 
 	return c.JSON(http.StatusCreated, task)
@@ -39,7 +39,7 @@ func (h *Handler) GetList(c echo.Context) error {
 	tasks := new([]Task)
 
 	if err := h.service.GetList(tasks); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return utils.EchoBadRequest(err)
 	}
 
 	response := []TaskResponse{}
@@ -66,7 +66,7 @@ func (h *Handler) GetById(c echo.Context) error {
 	}
 
 	if err := h.service.GetById(task, id); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return utils.EchoBadRequest(err)
 	}
 
 	response := TaskResponse{
