@@ -30,3 +30,9 @@ type CreateBody struct {
 	Description string `json:"description"`
 	Completed   bool   `json:"completed" validate:"boolean"`
 }
+
+type PatchBody struct {
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	Completed   *bool   `json:"completed"`
+}
