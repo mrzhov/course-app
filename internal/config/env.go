@@ -1,6 +1,10 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"log/slog"
+
+	"github.com/spf13/viper"
+)
 
 type Env struct {
 	PORT   string
@@ -9,7 +13,10 @@ type Env struct {
 
 func initEnv() *Env {
 	viper.SetConfigFile(".env")
-	viper.ReadInConfig()
+
+	if err := viper.ReadInConfig(); err != nil {
+		slog.Error("viper: read config error", "error", err)
+	}
 
 	port := viper.Get("PORT").(string)
 	dbUrl := viper.Get("DB_URL").(string)
