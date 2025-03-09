@@ -25,11 +25,11 @@ func (r *Repository) Create(task *Task) error {
 }
 
 func (r *Repository) GetList(tasks *[]Task) error {
-	return r.db.Find(&tasks).Error
+	return r.db.Find(tasks).Error
 }
 
 func (r *Repository) GetById(task *Task, id uint) error {
-	return r.db.First(&task, id).Error
+	return r.db.First(task, id).Error
 }
 
 func (r *Repository) Patch(task *Task) error {

@@ -1,4 +1,4 @@
-package task
+package user
 
 import (
 	"net/http"
@@ -22,42 +22,41 @@ func (h *Handler) Create(c echo.Context) error {
 		return err
 	}
 
-	task := Task{
-		Title:       body.Title,
-		Description: body.Description,
-		Completed:   body.Completed,
+	user := User{
+		Email:    body.Email,
+		Password: body.Password,
 	}
 
-	if err := h.service.Create(&task); err != nil {
+	if err := h.service.Create(&user); err != nil {
 		return utils.EchoBadRequest(err)
 	}
 
-	return c.JSON(http.StatusCreated, task)
+	return c.JSON(http.StatusCreated, user)
 }
 
 func (h *Handler) GetList(c echo.Context) error {
-	tasks := new([]Task)
+	users := new([]User)
 
-	if err := h.service.GetList(tasks); err != nil {
+	if err := h.service.GetList(users); err != nil {
 		return utils.EchoBadRequest(err)
 	}
 
-	response := []TaskResponse{}
-	for _, t := range *tasks {
-		response = append(response, NewTaskResponse(t))
+	response := []UserResponse{}
+	for _, t := range *users {
+		response = append(response, NewUserResponse(t))
 	}
 
 	return c.JSON(http.StatusOK, response)
 }
 
-func (h *Handler) _GetById(task *Task, paramId string) error {
+func (h *Handler) _GetById(user *User, paramId string) error {
 	id := new(uint)
 
 	if err := utils.ValidateParamId(id, paramId); err != nil {
 		return err
 	}
 
-	if err := h.service.GetById(task, *id); err != nil {
+	if err := h.service.GetById(user, *id); err != nil {
 		return utils.EchoBadRequest(err)
 	}
 
@@ -65,55 +64,47 @@ func (h *Handler) _GetById(task *Task, paramId string) error {
 }
 
 func (h *Handler) GetById(c echo.Context) error {
-	task := new(Task)
+	user := new(User)
 
-	if err := h._GetById(task, c.Param("id")); err != nil {
+	if err := h._GetById(user, c.Param("id")); err != nil {
 		return err
 	}
 
-	response := NewTaskResponse(*task)
+	response := NewUserResponse(*user)
 	return c.JSON(http.StatusOK, response)
 }
 
 func (h *Handler) Patch(c echo.Context) error {
 	body := new(PatchBody)
-	task := new(Task)
+	user := new(User)
 
 	if err := utils.ValidateBody(body, c); err != nil {
 		return err
 	}
 
-	if err := h._GetById(task, c.Param("id")); err != nil {
+	if err := h._GetById(user, c.Param("id")); err != nil {
 		return err
 	}
 
-	if body.Title != nil {
-		task.Title = *body.Title
+	if body.Email != nil {
+		user.Email = *body.Email
 	}
 
-	if body.Description != nil {
-		task.Description = *body.Description
-	}
-
-	if body.Completed != nil {
-		task.Completed = *body.Completed
-	}
-
-	if err := h.service.Patch(task); err != nil {
+	if err := h.service.Patch(user); err != nil {
 		return utils.EchoBadRequest(err)
 	}
 
-	return c.JSON(http.StatusOK, *task)
+	return c.JSON(http.StatusOK, *user)
 }
 
 func (h *Handler) Delete(c echo.Context) error {
-	task := new(Task)
+	user := new(User)
 
-	if err := h._GetById(task, c.Param("id")); err != nil {
+	if err := h._GetById(user, c.Param("id")); err != nil {
 		return err
 	}
 
-	if err := h.service.Delete(task); err != nil {
+	if err := h.service.Delete(user); err != nil {
 		return utils.EchoBadRequest(err)
 	}
 
