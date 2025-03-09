@@ -27,7 +27,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/TaskCreateBody"
+              $ref: "#/components/schemas/TaskCreatePatchBody"
       responses:
         "201":
           description: The created task
@@ -35,6 +35,61 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TaskResponse"
+  /tasks/{id}:
+    get:
+      summary: Get a task by ID
+      tags:
+        - tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskResponse"
+    patch:
+      summary: Patch a task by ID
+      tags:
+        - tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: The task to patch
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskCreatePatchBody"
+      responses:
+        "200":
+          description: The task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskResponse"
+    delete:
+      summary: Delete a task by ID
+      tags:
+        - tasks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The task was deleted
 
 components:
   schemas:
@@ -50,7 +105,7 @@ components:
           type: string
         completed:
           type: boolean
-    TaskCreateBody:
+    TaskCreatePatchBody:
       type: object
       properties:
         title:

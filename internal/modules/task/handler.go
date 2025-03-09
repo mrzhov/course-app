@@ -3,6 +3,7 @@ package task
 import (
 	"context"
 	"errors"
+	"strconv"
 
 	"github.com/mrzhov/course-app/internal/utils"
 	"github.com/mrzhov/course-app/internal/web/tasks"
@@ -16,7 +17,7 @@ func NewHandler(service *Service) *Handler {
 	return &Handler{service}
 }
 
-func (h *Handler) PostTasks(c context.Context, request tasks.PostTasksRequestObject) (tasks.PostTasksResponseObject, error) {
+func (h *Handler) PostTasks(_ context.Context, request tasks.PostTasksRequestObject) (tasks.PostTasksResponseObject, error) {
 	body := request.Body
 
 	if body.Title == nil {
@@ -71,72 +72,85 @@ func (h *Handler) GetTasks(_ context.Context, _ tasks.GetTasksRequestObject) (ta
 	return response, nil
 }
 
-// func (h *Handler) _GetById(task *Task, paramId string) error {
-// 	id := new(uint)
+func (h *Handler) GetTasksId(_ context.Context, request tasks.GetTasksIdRequestObject) (tasks.GetTasksIdResponseObject, error) {
+	idInt, idIntErr := strconv.Atoi(request.Id)
+	if idIntErr != nil {
+		return nil, utils.EchoBadRequest(idIntErr)
+	}
 
-// 	if err := utils.ValidateParamId(id, paramId); err != nil {
-// 		return err
-// 	}
+	task := new(Task)
 
-// 	if err := h.service.GetById(task, *id); err != nil {
-// 		return utils.EchoBadRequest(err)
-// 	}
+	if err := h.service.GetById(task, uint(idInt)); err != nil {
+		return nil, utils.EchoBadRequest(err)
+	}
 
-// 	return nil
-// }
+	response := tasks.GetTasksId200JSONResponse{
+		Id:          &task.ID,
+		Title:       &task.Title,
+		Description: &task.Description,
+		Completed:   &task.Completed,
+	}
 
-// func (h *Handler) GetById(c echo.Context) error {
-// 	task := new(Task)
+	return response, nil
+}
 
-// 	if err := h._GetById(task, c.Param("id")); err != nil {
-// 		return err
-// 	}
+func (h *Handler) PatchTasksId(_ context.Context, request tasks.PatchTasksIdRequestObject) (tasks.PatchTasksIdResponseObject, error) {
+	idInt, idIntErr := strconv.Atoi(request.Id)
+	if idIntErr != nil {
+		return nil, utils.EchoBadRequest(idIntErr)
+	}
 
-// 	response := NewTaskResponse(*task)
-// 	return c.JSON(http.StatusOK, response)
-// }
+	task := new(Task)
 
-// func (h *Handler) Patch(c echo.Context) error {
-// 	body := new(PatchBody)
-// 	task := new(Task)
+	if err := h.service.GetById(task, uint(idInt)); err != nil {
+		return nil, utils.EchoBadRequest(err)
+	}
 
-// 	if err := utils.ValidateBody(body, c); err != nil {
-// 		return err
-// 	}
+	body := request.Body
 
-// 	if err := h._GetById(task, c.Param("id")); err != nil {
-// 		return err
-// 	}
+	if body.Title != nil {
+		task.Title = *body.Title
+	}
 
-// 	if body.Title != nil {
-// 		task.Title = *body.Title
-// 	}
+	if body.Description != nil {
+		task.Description = *body.Description
+	}
 
-// 	if body.Description != nil {
-// 		task.Description = *body.Description
-// 	}
+	if body.Completed != nil {
+		task.Completed = *body.Completed
+	}
 
-// 	if body.Completed != nil {
-// 		task.Completed = *body.Completed
-// 	}
+	if err := h.service.Patch(task); err != nil {
+		return nil, utils.EchoBadRequest(err)
+	}
 
-// 	if err := h.service.Patch(task); err != nil {
-// 		return utils.EchoBadRequest(err)
-// 	}
+	response := tasks.PatchTasksId200JSONResponse{
+		Id:          &task.ID,
+		Title:       &task.Title,
+		Description: &task.Description,
+		Completed:   &task.Completed,
+	}
 
-// 	return c.JSON(http.StatusOK, *task)
-// }
+	return response, nil
+}
 
-// func (h *Handler) Delete(c echo.Context) error {
-// 	task := new(Task)
+func (h *Handler) DeleteTasksId(_ context.Context, request tasks.DeleteTasksIdRequestObject) (tasks.DeleteTasksIdResponseObject, error) {
+	idInt, idIntErr := strconv.Atoi(request.Id)
+	if idIntErr != nil {
+		return nil, utils.EchoBadRequest(idIntErr)
+	}
 
-// 	if err := h._GetById(task, c.Param("id")); err != nil {
-// 		return err
-// 	}
+	task := new(Task)
 
-// 	if err := h.service.Delete(task); err != nil {
-// 		return utils.EchoBadRequest(err)
-// 	}
+	if err := h.service.GetById(task, uint(idInt)); err != nil {
+		return nil, utils.EchoBadRequest(err)
+	}
 
-// 	return c.String(http.StatusOK, "Deleted successfully!")
-// }
+	if err := h.service.Delete(task); err != nil {
+		return nil, utils.EchoBadRequest(err)
+	}
+
+	response := tasks.DeleteTasksId200Response{}
+
+	return response, nil
+}
