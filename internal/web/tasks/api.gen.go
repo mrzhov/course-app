@@ -13,8 +13,15 @@ import (
 	strictecho "github.com/oapi-codegen/runtime/strictmiddleware/echo"
 )
 
-// Task defines model for Task.
-type Task struct {
+// TaskCreateBody defines model for TaskCreateBody.
+type TaskCreateBody struct {
+	Completed   *bool   `json:"completed,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Title       *string `json:"title,omitempty"`
+}
+
+// TaskResponse defines model for TaskResponse.
+type TaskResponse struct {
 	Completed   *bool   `json:"completed,omitempty"`
 	Description *string `json:"description,omitempty"`
 	Id          *uint   `json:"id,omitempty"`
@@ -22,7 +29,7 @@ type Task struct {
 }
 
 // PostTasksJSONRequestBody defines body for PostTasks for application/json ContentType.
-type PostTasksJSONRequestBody = Task
+type PostTasksJSONRequestBody = TaskCreateBody
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -97,7 +104,7 @@ type GetTasksResponseObject interface {
 	VisitGetTasksResponse(w http.ResponseWriter) error
 }
 
-type GetTasks200JSONResponse []Task
+type GetTasks200JSONResponse []TaskResponse
 
 func (response GetTasks200JSONResponse) VisitGetTasksResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -114,7 +121,7 @@ type PostTasksResponseObject interface {
 	VisitPostTasksResponse(w http.ResponseWriter) error
 }
 
-type PostTasks201JSONResponse Task
+type PostTasks201JSONResponse TaskResponse
 
 func (response PostTasks201JSONResponse) VisitPostTasksResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")

@@ -2,6 +2,7 @@ package task
 
 import (
 	"context"
+	"errors"
 
 	"github.com/mrzhov/course-app/internal/utils"
 	"github.com/mrzhov/course-app/internal/web/tasks"
@@ -15,13 +16,23 @@ func NewHandler(service *Service) *Handler {
 	return &Handler{service}
 }
 
-func (h *Handler) PostTasks(_ context.Context, request tasks.PostTasksRequestObject) (tasks.PostTasksResponseObject, error) {
+func (h *Handler) PostTasks(c context.Context, request tasks.PostTasksRequestObject) (tasks.PostTasksResponseObject, error) {
 	body := request.Body
 
+	if body.Title == nil {
+		return nil, utils.EchoBadRequest(errors.New("field title is required"))
+	}
+
 	task := Task{
-		Title:       *body.Title,
-		Description: *body.Description,
-		Completed:   *body.Completed,
+		Title: *body.Title,
+	}
+
+	if body.Description != nil {
+		task.Description = *body.Description
+	}
+
+	if body.Completed != nil {
+		task.Completed = *body.Completed
 	}
 
 	if err := h.service.Create(&task); err != nil {
@@ -48,7 +59,8 @@ func (h *Handler) GetTasks(_ context.Context, _ tasks.GetTasksRequestObject) (ta
 	response := tasks.GetTasks200JSONResponse{}
 
 	for _, tsk := range *allTasks {
-		task := tasks.Task{
+		task := tasks.TaskResponse{
+			Id:          &tsk.ID,
 			Title:       &tsk.Title,
 			Description: &tsk.Description,
 			Completed:   &tsk.Completed,
@@ -58,41 +70,6 @@ func (h *Handler) GetTasks(_ context.Context, _ tasks.GetTasksRequestObject) (ta
 
 	return response, nil
 }
-
-// func (h *Handler) Create(c echo.Context) error {
-// 	body := new(CreateBody)
-
-// 	if err := utils.ValidateBody(body, c); err != nil {
-// 		return err
-// 	}
-
-// 	task := Task{
-// 		Title:       body.Title,
-// 		Description: body.Description,
-// 		Completed:   body.Completed,
-// 	}
-
-// 	if err := h.service.Create(&task); err != nil {
-// 		return utils.EchoBadRequest(err)
-// 	}
-
-// 	return c.JSON(http.StatusCreated, task)
-// }
-
-// func (h *Handler) GetList(c echo.Context) error {
-// 	tasks := new([]Task)
-
-// 	if err := h.service.GetList(tasks); err != nil {
-// 		return utils.EchoBadRequest(err)
-// 	}
-
-// 	response := []TaskResponse{}
-// 	for _, t := range *tasks {
-// 		response = append(response, NewTaskResponse(t))
-// 	}
-
-// 	return c.JSON(http.StatusOK, response)
-// }
 
 // func (h *Handler) _GetById(task *Task, paramId string) error {
 // 	id := new(uint)

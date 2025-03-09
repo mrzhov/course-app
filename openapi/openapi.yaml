@@ -16,7 +16,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Task"
+                  $ref: "#/components/schemas/TaskResponse"
     post:
       summary: Create a new task
       tags:
@@ -27,23 +27,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Task"
+              $ref: "#/components/schemas/TaskCreateBody"
       responses:
         "201":
           description: The created task
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Task"
+                $ref: "#/components/schemas/TaskResponse"
 
 components:
   schemas:
-    Task:
+    TaskResponse:
       type: object
       properties:
         id:
           type: integer
           format: uint
+        title:
+          type: string
+        description:
+          type: string
+        completed:
+          type: boolean
+    TaskCreateBody:
+      type: object
+      properties:
         title:
           type: string
         description:
