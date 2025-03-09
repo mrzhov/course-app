@@ -31,7 +31,8 @@ func (h *Handler) Create(c echo.Context) error {
 		return utils.EchoBadRequest(err)
 	}
 
-	return c.JSON(http.StatusCreated, user)
+	response := NewUserResponse(user)
+	return c.JSON(http.StatusCreated, response)
 }
 
 func (h *Handler) GetList(c echo.Context) error {
@@ -94,7 +95,8 @@ func (h *Handler) Patch(c echo.Context) error {
 		return utils.EchoBadRequest(err)
 	}
 
-	return c.JSON(http.StatusOK, *user)
+	response := NewUserResponse(*user)
+	return c.JSON(http.StatusOK, response)
 }
 
 func (h *Handler) Delete(c echo.Context) error {

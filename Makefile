@@ -10,6 +10,9 @@ migrate:
 migrate-down:
 	$(MIGRATE) down
 
+migrate-force:
+	$(MIGRATE) force ${VERSION}
+
 lint:
 	golangci-lint run --out-format=colored-line-number
 	

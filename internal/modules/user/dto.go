@@ -21,10 +21,10 @@ func NewUserResponse(t User) UserResponse {
 }
 
 type CreateBody struct {
-	Email    string `json:"email" validate:"required, email"`
-	Password string `json:"password" validate:"required, min=8"`
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,min=8"`
 }
 
 type PatchBody struct {
-	Email *string `json:"email" validate:"required, email"`
+	Email *string `json:"email" validate:"email"`
 }
