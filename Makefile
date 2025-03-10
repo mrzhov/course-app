@@ -2,16 +2,16 @@ DB_URL := "postgres://cource_user:cource_password@localhost:5432/cource_app?sslm
 MIGRATE := migrate -path ./migrations -database $(DB_URL)
 
 migrate-new:
-	migrate create -ext sql -dir ./migrations ${NAME}
+	migrate create -ext sql -dir ./migrations -seq ${NAME}
 
-migrate:
-	$(MIGRATE) up
+migrate-up:
+	$(MIGRATE) up ${N}
 
 migrate-down:
-	$(MIGRATE) down
+	$(MIGRATE) down ${N}
 
 migrate-force:
-	$(MIGRATE) force ${VERSION}
+	$(MIGRATE) force ${V}
 
 lint:
 	golangci-lint run --out-format=colored-line-number

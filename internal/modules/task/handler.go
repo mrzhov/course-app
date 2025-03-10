@@ -26,6 +26,7 @@ func (h *Handler) Create(c echo.Context) error {
 		Title:       body.Title,
 		Description: body.Description,
 		Completed:   body.Completed,
+		UserID:      &body.UserID,
 	}
 
 	if err := h.service.Create(&task); err != nil {

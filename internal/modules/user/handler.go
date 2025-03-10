@@ -112,3 +112,13 @@ func (h *Handler) Delete(c echo.Context) error {
 
 	return c.NoContent(http.StatusNoContent)
 }
+
+func (h *Handler) GetTasks(c echo.Context) error {
+	user := new(User)
+
+	if err := h._GetById(user, c.Param("id")); err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, user.Tasks)
+}

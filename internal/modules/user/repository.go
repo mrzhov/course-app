@@ -25,11 +25,11 @@ func (r *Repository) Create(user *User) error {
 }
 
 func (r *Repository) GetList(users *[]User) error {
-	return r.db.Find(users).Error
+	return r.db.Model(&User{}).Preload("Tasks").Find(users).Error
 }
 
 func (r *Repository) GetById(user *User, id uint) error {
-	return r.db.First(user, id).Error
+	return r.db.Model(&User{}).Preload("Tasks").First(user, id).Error
 }
 
 func (r *Repository) Patch(user *User) error {

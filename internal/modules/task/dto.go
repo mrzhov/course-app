@@ -7,6 +7,7 @@ type Task struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Completed   bool   `json:"completed"`
+	UserID      *uint  `json:"user_id"`
 }
 
 type TaskResponse struct {
@@ -14,6 +15,7 @@ type TaskResponse struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Completed   bool   `json:"completed"`
+	UserID      *uint  `json:"user_id"`
 }
 
 func NewTaskResponse(t Task) TaskResponse {
@@ -22,6 +24,7 @@ func NewTaskResponse(t Task) TaskResponse {
 		Title:       t.Title,
 		Description: t.Description,
 		Completed:   t.Completed,
+		UserID:      t.UserID,
 	}
 }
 
@@ -29,6 +32,7 @@ type CreateBody struct {
 	Title       string `json:"title" validate:"required"`
 	Description string `json:"description"`
 	Completed   bool   `json:"completed" validate:"boolean"`
+	UserID      uint   `json:"user_id" validate:"required"`
 }
 
 type PatchBody struct {

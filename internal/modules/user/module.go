@@ -13,7 +13,10 @@ func Module(group *echo.Group, db *gorm.DB) {
 	g := group.Group("/users")
 	g.POST("", handler.Create)
 	g.GET("", handler.GetList)
-	g.GET("/:id", handler.GetById)
-	g.PATCH("/:id", handler.Patch)
-	g.DELETE("/:id", handler.Delete)
+
+	gg := group.Group("/users/:id")
+	gg.GET("", handler.GetById)
+	gg.PATCH("", handler.Patch)
+	gg.DELETE("", handler.Delete)
+	gg.GET("/tasks", handler.GetTasks)
 }
