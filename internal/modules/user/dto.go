@@ -14,21 +14,14 @@ type User struct {
 }
 
 type UserResponse struct {
-	Id    uint                `json:"id"`
-	Email string              `json:"email"`
-	Tasks []task.TaskResponse `json:"tasks"`
+	Id    uint   `json:"id"`
+	Email string `json:"email"`
 }
 
 func NewUserResponse(t User) UserResponse {
-	tasks := []task.TaskResponse{}
-	for _, t := range t.Tasks {
-		tasks = append(tasks, task.NewTaskResponse(t))
-	}
-
 	return UserResponse{
 		Id:    t.ID,
 		Email: t.Email,
-		Tasks: tasks,
 	}
 }
 

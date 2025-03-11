@@ -27,3 +27,7 @@ func (s *Service) Patch(user *User) error {
 func (s *Service) Delete(user *User) error {
 	return s.repo.Delete(user)
 }
+
+func (s *Service) GetTasks(user *User, id uint) error {
+	return s.repo.GetTasks(user, id)
+}

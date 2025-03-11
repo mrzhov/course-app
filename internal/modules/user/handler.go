@@ -114,10 +114,15 @@ func (h *Handler) Delete(c echo.Context) error {
 }
 
 func (h *Handler) GetTasks(c echo.Context) error {
+	id := new(uint)
 	user := new(User)
 
-	if err := h._GetById(user, c.Param("id")); err != nil {
+	if err := utils.ValidateParamId(id, c.Param("id")); err != nil {
 		return err
+	}
+
+	if err := h.service.GetTasks(user, *id); err != nil {
+		return utils.EchoBadRequest(err)
 	}
 
 	return c.JSON(http.StatusOK, user.Tasks)
